@@ -1,0 +1,19 @@
+FROM python:3.10-slim
+
+WORKDIR /code
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends gcc python3-dev
+
+# Copy and install python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of your app code and model weights
+COPY . .
+
+# Render dynamically assigns a port
+EXPOSE 10000
+
+# Command to run your FastAPI app with uvicorn using Render's dynamic port
+CMD sh -c "uvicorn main:app --host 0.0.0.0 --port ${PORT:-10000}"
